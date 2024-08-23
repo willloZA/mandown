@@ -145,5 +145,28 @@ class OutputProcessContainer:
         Convert any WEBP images to PNG.
         """
         path = Path(self.filename)
-        self.image.save(path.with_suffix(".png"), "PNG")
-        path.unlink()
+
+        def is_webp_image(file_path):
+            try:
+                with Image.open(file_path) as img:
+                    # Check if the image format is WebP
+                    return img.format == 'WEBP'
+            except IOError:
+                return False
+
+        
+        if is_webp_image(path):
+            try:
+                self.image.save(path.with_suffix(".png"), "PNG")
+                path.unlink()
+            except IOError:
+                print(f"{self.filename} is truncated and couldn't be converted to png")
+        else:
+            try:
+                self.image.save(self.filename)
+            except IOError:
+                print(f"{self.filename} is truncated and couldn't be converted to png")
+                pass
+        
+        
+        
